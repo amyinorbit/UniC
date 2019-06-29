@@ -44,7 +44,7 @@ static GBProperty fetchProperty(UnicodeScalar scalar) {
     return result ? result->prop : Any;
 }
 
-bool shouldBreakBetween(UnicodeScalar lhs, UnicodeScalar rhs) {
+bool unic_shouldBreak(UnicodeScalar lhs, UnicodeScalar rhs) {
     GBProperty lbp = fetchProperty(lhs);
     GBProperty rbp = fetchProperty(rhs);
 
