@@ -21,11 +21,14 @@ struct sUnicodeGrapheme {
     const char* end;
 };
 
-UnicodeScalar unic_utf8Get(const char* data, size_t length);
+UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size);
 int8_t unic_utf8Write(UnicodeScalar scalar, char* data, size_t length);
 int8_t unit_utf8Size(UnicodeScalar scalar);
 
 bool unic_shouldBreak(UnicodeScalar lhs, UnicodeScalar rhs);
+
+size_t unic_countScalars(const char* string, size_t length);
+size_t unic_countGraphemes(const char* string, size_t length);
 
 bool unic_isPrivate(UnicodeScalar scalar);
 bool unic_isCombining(UnicodeScalar scalar);

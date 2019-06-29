@@ -9,11 +9,12 @@
 //===--------------------------------------------------------------------------------------------===
 #include <unic/unic.h>
 
-UnicodeScalar unic_utf8Get(const char* data, size_t length) {
+UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size) {
     uint8_t remaining = 0;
     UnicodeScalar scalar = 0;
     
     if((*data & 0x80) == 0x00) {
+        *size = 1;
         return *data;
     }
     
@@ -29,17 +30,24 @@ UnicodeScalar unic_utf8Get(const char* data, size_t length) {
         scalar = *data & 0x07;
         remaining = 3;
     }
-    else { return -1; }
+    else {
+        goto fail;
+    }
     
-    if(remaining > length + 1) { return -1; }
+    if(remaining > length + 1) goto fail;
+    *size = remaining + 1;
     
     while(remaining > 0) {
         data += 1;
         remaining -= 1;
-        if((*data & 0xc0) != 0x80) { return -1; }
+        if((*data & 0xc0) != 0x80) goto fail;
         scalar = (scalar << 6) | (*data & 0x3f);
     }
     return scalar;
+    
+fail:
+    *size = 0;
+    return 0;
 }
 
 
