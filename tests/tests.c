@@ -33,6 +33,23 @@ void utf8_encode() {
 
 typedef struct {const char* string; size_t size; } StringData;
 
+
+void utf8_scalars() {
+    static const StringData strings[] = {
+        {"Hello, world", 12},
+        {"民ねざルず禁許や能", 9},
+        {"🇬🇧🏴󠁧󠁢󠁳󠁣󠁴󠁿🏳️‍🌈😏", 14}
+    };
+    
+    static const size_t count = sizeof(strings)/sizeof(StringData);
+    
+    for(size_t i = 0; i < count; ++i) {
+        StringData data = strings[i];
+        size_t size = unic_countScalars(data.string, strlen(data.string));
+        TEST_ASSERT_EQUAL(data.size, size);
+    }
+}
+
 void utf8_graphemes() {
     static const StringData strings[] = {
         {"Hello, world", 12},
@@ -53,6 +70,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(utf8_decode);
     RUN_TEST(utf8_encode);
+    RUN_TEST(utf8_scalars);
     RUN_TEST(utf8_graphemes);
     return UNITY_END();
 }

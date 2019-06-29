@@ -50,6 +50,13 @@ fail:
     return 0;
 }
 
+const char* unic_utf8Next(const char* data, size_t length) {
+    if((*data & 0x80) == 0x00) return (length > 0 ? data + 1 : NULL);
+    if((*data & 0xe0) == 0xc0) return (length > 1 ? data + 2 : NULL);
+    else if((*data & 0xf0) == 0xe0) return (length > 2 ? data + 3 : NULL);
+    else if((*data & 0xf8) == 0xf0) return (length > 3 ? data + 4 : NULL);
+    return NULL;
+}
 
 // 0x00000000 - 0x0000007F:
 //        0xxxxxxx

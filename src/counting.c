@@ -11,18 +11,14 @@
 
 size_t unic_countScalars(const char* string, size_t length) {
     if(!string || !length) return 0;
-    const char* current = string;
     const char* end = string + length;
     size_t count = 0;
     
-    while(current < end) {
-        size_t remaining = end - current;
-        
-        uint8_t size = 0;
-        unic_utf8Read(current, remaining, &size);
-        if(!size) return 0;
+    while(string < end) {
+        const char* next = unic_utf8Next(string, end - string);
+        if(!next) return 0;
         count += 1;
-        current += size;
+        string = next;;
     }
     
     return count;

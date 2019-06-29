@@ -22,6 +22,7 @@ struct sUnicodeGrapheme {
 };
 
 UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size);
+const char* unic_utf8Next(const char* data, size_t length);
 int8_t unic_utf8Write(UnicodeScalar scalar, char* data, size_t length);
 int8_t unit_utf8Size(UnicodeScalar scalar);
 
