@@ -15,53 +15,53 @@
 
 void utf8_decode() {
     const char string[] = "😭";
-    
+
     uint8_t size = 0;
-    UnicodeScalar scalar = unic_utf8Read(string, sizeof(string), &size);
+    unicode_scalar_t scalar = unicode_utf8_read(string, sizeof(string), &size);
     TEST_ASSERT_EQUAL_UINT8(4, size);
     TEST_ASSERT_EQUAL_HEX32(0x1F62D, scalar);
 }
 
 void utf8_encode() {
-    UnicodeScalar scalar = 0x1F62D;
+    unicode_scalar_t scalar = 0x1F62D;
     char string[8];
-    int size = unic_utf8Write(scalar, string, 8);
-    
+    int size = unicode_utf8_write(scalar, string, 8);
+
     TEST_ASSERT_EQUAL(4, size);
     TEST_ASSERT_EQUAL_MEMORY("😭", string, 4);
 }
 
-typedef struct {const char* string; size_t size; } StringData;
+typedef struct {const char* string; size_t size; } string_data_t;
 
 
 void utf8_scalars() {
-    static const StringData strings[] = {
+    static const string_data_t strings[] = {
         {"Hello, world", 12},
         {"民ねざルず禁許や能", 9},
         {"🇬🇧🏴󠁧󠁢󠁳󠁣󠁴󠁿🏳️‍🌈😏", 14}
     };
-    
-    static const size_t count = sizeof(strings)/sizeof(StringData);
-    
+
+    static const size_t count = sizeof(strings)/sizeof(string_data_t);
+
     for(size_t i = 0; i < count; ++i) {
-        StringData data = strings[i];
-        size_t size = unic_countScalars(data.string, strlen(data.string));
+        string_data_t data = strings[i];
+        size_t size = unicode_count_scalars(data.string, strlen(data.string));
         TEST_ASSERT_EQUAL(data.size, size);
     }
 }
 
 void utf8_graphemes() {
-    static const StringData strings[] = {
+    static const string_data_t strings[] = {
         {"Hello, world", 12},
         {"民ねざルず禁許や能", 9},
         {"🇬🇧🏴󠁧󠁢󠁳󠁣󠁴󠁿🏳️‍🌈😏", 4}
     };
-    
-    static const size_t count = sizeof(strings)/sizeof(StringData);
-    
+
+    static const size_t count = sizeof(strings)/sizeof(string_data_t);
+
     for(size_t i = 0; i < count; ++i) {
-        StringData data = strings[i];
-        size_t size = unic_countGraphemes(data.string, strlen(data.string));
+        string_data_t data = strings[i];
+        size_t size = unicode_count_graphemes(data.string, strlen(data.string));
         TEST_ASSERT_EQUAL(data.size, size);
     }
 }

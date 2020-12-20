@@ -9,15 +9,15 @@
 //===--------------------------------------------------------------------------------------------===
 #include <unic/unic.h>
 
-UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size) {
+unicode_scalar_t unicode_utf8_read(const char* data, size_t length, uint8_t* size) {
     uint8_t remaining = 0;
-    UnicodeScalar scalar = 0;
-    
+    unicode_scalar_t scalar = 0;
+
     if((*data & 0x80) == 0x00) {
         *size = 1;
         return *data;
     }
-    
+
     if((*data & 0xe0) == 0xc0) {
         scalar = *data & 0x1f;
         remaining = 1;
@@ -33,10 +33,10 @@ UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size) {
     else {
         goto fail;
     }
-    
+
     if(remaining > length + 1) goto fail;
     *size = remaining + 1;
-    
+
     while(remaining > 0) {
         data += 1;
         remaining -= 1;
@@ -44,13 +44,13 @@ UnicodeScalar unic_utf8Read(const char* data, size_t length, uint8_t* size) {
         scalar = (scalar << 6) | (*data & 0x3f);
     }
     return scalar;
-    
+
 fail:
     *size = 0;
     return 0;
 }
 
-const char* unic_utf8Next(const char* data, size_t length) {
+const char* unicode_utf8_next(const char* data, size_t length) {
     if((*data & 0x80) == 0x00) return (length > 0 ? data + 1 : NULL);
     if((*data & 0xe0) == 0xc0) return (length > 1 ? data + 2 : NULL);
     else if((*data & 0xf0) == 0xe0) return (length > 2 ? data + 3 : NULL);
@@ -75,31 +75,31 @@ const char* unic_utf8Next(const char* data, size_t length) {
 //
 // 0x04000000 - 0x7FFFFFFF:
 //    1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-int8_t unic_utf8Write(UnicodeScalar scalar, char* data, size_t length) {
-    
-    int8_t size =  unit_utf8Size(scalar);
+int8_t unicode_utf8_write(unicode_scalar_t scalar, char* data, size_t length) {
+
+    int8_t size =  unicode_utf8_size(scalar);
     if(size < 0) { return -1; }
     if(size > length) { return -1; }
-    
+
     switch(size) {
     case 1:
         data[0] = scalar & 0x0000007f;
         return 1;
         break;
-        
+
     case 2:
         data[0] = 0xc0 | ((scalar & 0x000007c0) >> 6);
         data[1] = 0x80 | (scalar & 0x0000003f);
         return 2;
         break;
-        
+
     case 3:
         data[0] = 0xe0 | ((scalar & 0x0000f000) >> 12);
         data[1] = 0x80 | ((scalar & 0x00000fc0) >> 6);
         data[2] = 0x80 | (scalar & 0x0000003f);
         return 3;
         break;
-        
+
     case 4:
         data[0] = 0xf0 | ((scalar & 0x001c0000) >> 18);
         data[1] = 0x80 | ((scalar & 0x0003f000) >> 12);
@@ -107,14 +107,14 @@ int8_t unic_utf8Write(UnicodeScalar scalar, char* data, size_t length) {
         data[3] = 0x80 | (scalar & 0x0000003f);
         return 4;
         break;
-        
+
     default:
         break;
     }
     return -1;
 }
 
-int8_t unit_utf8Size(UnicodeScalar scalar) {
+int8_t unicode_utf8_size(unicode_scalar_t scalar) {
     if (scalar < 0) { return -1; }
     if (scalar <= 0x7f) { return 1; }
     if (scalar <= 0x7ff) { return 2; }

@@ -12,30 +12,30 @@
 
 #define IN_RANGE(val, lower, upper) ((val) >= (lower) && (val) <= (upper))
 
-bool unic_isPrivate(UnicodeScalar scalar) {
+bool unicode_is_private(unicode_scalar_t scalar) {
     return IN_RANGE(scalar, 0xe000, 0x0f8ff)
         || IN_RANGE(scalar, 0xf0000, 0xfffff)
         || IN_RANGE(scalar, 0x100000, 0x10FFFF);
 }
 
-bool unic_isCombining(UnicodeScalar scalar) {
+bool unicode_is_combining(unicode_scalar_t scalar) {
     return IN_RANGE(scalar, 0x0300, 0x036f);
 }
 
-bool unic_isBMP(UnicodeScalar scalar) {
-    return IN_RANGE(scalar, 0x000000, 0x100000) && !unic_isPrivate(scalar);
+bool unicode_is_bmp(unicode_scalar_t scalar) {
+    return IN_RANGE(scalar, 0x000000, 0x100000) && !unicode_is_private(scalar);
 }
 
-bool unic_isWhitespace(UnicodeScalar scalar) {
+bool unicode_is_whitespace(unicode_scalar_t scalar) {
     return scalar == 0x0000
         || scalar == 0x0020
         || scalar == 0x000d
         || scalar == 0x0009
         || scalar == 0x000b
-        || scalar == 0x000c;         
+        || scalar == 0x000c;
 }
 
-bool unic_isIdentifierHead(UnicodeScalar scalar) {
+bool unicode_is_identifier_head(unicode_scalar_t scalar) {
     if(scalar < 0) { return false; }
     return (scalar <= 0x7f && (scalar == '_' || isalpha(scalar & 0x7f)))
         || (scalar == 0x00a8)
@@ -89,8 +89,8 @@ bool unic_isIdentifierHead(UnicodeScalar scalar) {
         || IN_RANGE(scalar, 0xe0000, 0xefffd);
 }
 
-bool unic_isIdentifier(UnicodeScalar scalar) {
-    return unic_isIdentifierHead(scalar)
+bool unicode_is_identifier(unicode_scalar_t scalar) {
+    return unicode_is_identifier_head(scalar)
         || (scalar <= 0x7f && isdigit(scalar & 0x7f))
         || IN_RANGE(scalar, 0x0300, 0x036f)
         || IN_RANGE(scalar, 0x1dc0, 0x1dff)
@@ -98,7 +98,7 @@ bool unic_isIdentifier(UnicodeScalar scalar) {
         || IN_RANGE(scalar, 0xfe20, 0xfe2f);
 }
 
-bool unic_isOperator(UnicodeScalar scalar) {
+bool unicode_is_operator(unicode_scalar_t scalar) {
     if(scalar > 0x7f) { return false; }
     return (scalar & 0x7f) == '+'
         || (scalar & 0x7f) == '-'
@@ -115,7 +115,7 @@ bool unic_isOperator(UnicodeScalar scalar) {
         || (scalar & 0x7f) == '~';
 }
 
-bool unic_isQuotedItem(UnicodeScalar scalar) {
+bool unicode_is_quoted_item(unicode_scalar_t scalar) {
     if(scalar < 0 && scalar > 0x7f) { return false; }
     return scalar != '\\' && scalar != '"' && scalar != 0x0a && scalar != 0x0d;
 }

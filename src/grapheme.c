@@ -15,15 +15,15 @@ typedef enum {
 } GBProperty;
 
 typedef struct {
-    UnicodeScalar begin;
-    UnicodeScalar end;
+    unicode_scalar_t begin;
+    unicode_scalar_t end;
     GBProperty prop;
 } Range;
 
-static int rangeCompare(const void* key, const void* elem) {
-    UnicodeScalar scalar = *(UnicodeScalar*)key;
+static int range_compare(const void* key, const void* elem) {
+    unicode_scalar_t scalar = *(unicode_scalar_t*)key;
     Range* range = (Range*)elem;
-    
+
     if(scalar < range->begin) return -1;
     if(scalar > range->end) return 1;
     return 0;
@@ -33,20 +33,20 @@ static const Range props[] = {
 #include "grapheme_ranges.h"
 };
 
-static GBProperty fetchProperty(UnicodeScalar scalar) {
+static GBProperty fetch_property(unicode_scalar_t scalar) {
     // Fast returns for simplicity
     if(scalar == 0x000C) return CR;
     if(scalar == 0x000A) return LF;
     if(scalar == 0x200D) return ZWJ;
-    
+
     static const size_t count = sizeof(props) / sizeof(Range);
-    Range* result = bsearch(&scalar, props, count, sizeof(Range), rangeCompare);
+    Range* result = bsearch(&scalar, props, count, sizeof(Range), range_compare);
     return result ? result->prop : Any;
 }
 
-bool unic_shouldBreak(UnicodeScalar lhs, UnicodeScalar rhs) {
-    GBProperty lbp = fetchProperty(lhs);
-    GBProperty rbp = fetchProperty(rhs);
+bool unicode_should_break(unicode_scalar_t lhs, unicode_scalar_t rhs) {
+    GBProperty lbp = fetch_property(lhs);
+    GBProperty rbp = fetch_property(rhs);
 
     // GB3
     if(lbp == CR && rbp == LF) return false;
